@@ -1,0 +1,52 @@
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+.rag_env/
+rag_env/
+chunker-venv/
+
+# VSCode and PyCharm config (optional)
+.vscode/
+.idea/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS trash & DS_Store
+.DS_Store
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python-specific logs/cache
+*.log
+*.cache
+*.coverage
+.tox/
+.mypy_cache/
+.pytest_cache/
+coverage.xml
+htmlcov/
+
+# Packaging and builds
+build/
+dist/
+*.egg-info/
+
+# Environment variables / secrets (if you have any)
+.env
+*.env
+.env.*
+
+# Tree-sitter compiled shared libs
+build/my-languages.so
+
