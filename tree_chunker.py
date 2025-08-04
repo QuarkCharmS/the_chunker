@@ -1,7 +1,7 @@
 import os
 from typing import List
 from tree_sitter_languages import get_parser  # <-- correct import for tree_sitter_languages
-from chunker_config import LANG_FUNCTION_NODES, EXT_TO_LANG
+from chunker_config import LANG_FUNCTION_NODES, EXT_TO_LANG, CHUNKABLE_LANGUAGES
 
 def resolve_language_from_path(path: str) -> str:
     basename = os.path.basename(path)
@@ -19,6 +19,11 @@ def resolve_language_from_path(path: str) -> str:
     return EXT_TO_LANG.get(ext.lower(), "default")
 
 def extract_code_blocks(code: str, language_name: str) -> List[str]:
+    
+    if language_name not in CHUNKABLE_LANGUAGES:
+        print(f"Skipping tree-sitter for {language_name}, treating as plain text.")
+        return [code]
+
     try:
         parser = get_parser(language_name)
         if parser is None:

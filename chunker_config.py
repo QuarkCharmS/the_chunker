@@ -1,5 +1,8 @@
+# chunker_config.py
+
+# === Node types to extract per language (Tree-sitter based) ===
 LANG_FUNCTION_NODES = {
-    # === High-level languages ===
+    # High-level languages
     "python": {"function_definition", "class_definition"},
     "javascript": {"function_declaration", "method_definition", "arrow_function"},
     "typescript": {"function_declaration", "method_definition", "arrow_function"},
@@ -11,43 +14,32 @@ LANG_FUNCTION_NODES = {
     "rust": {"function_item", "impl_item"},
     "ruby": {"class", "module", "method"},
 
-    # === Scripting / shell ===
+    # Shell / scripting
     "bash": {"function_definition"},
     "shell": {"function_definition"},
     "powershell": {"function_definition"},
 
-    # === Infra / DevOps ===
-    "yaml": {"block_mapping_pair"},              # e.g. GitLab CI jobs, scripts
-    "json": {"pair"},                            # key-value pairs
-    "toml": {"pair"},
-    "ini": {"pair"},
-    "dockerfile": {"instruction"},
-    "gitlab_ci": {"block_mapping_pair"},
-    "jenkinsfile": {"method_definition"},        # Groovy-style pipeline blocks
+    # Groovy-based CI pipelines
     "groovy": {"class_definition", "method_definition"},
+    "jenkinsfile": {"method_definition"},
 
-    # === Markup / docs ===
-    "html": {"element"},
-    "xml": {"element"},
-    "markdown": {"atx_heading", "fenced_code_block"},  # structure + code
-    "md": {"atx_heading", "fenced_code_block"},
+    # Assembly / low-level
+    "asm": {"label"},     # GAS style
+    "nasm": {"label"},    # NASM style
 
-    # === Assembly / low-level ===
-    "asm": {"label"},       # for GAS
-    "nasm": {"label"},      # for NASM
-
-    # === SQL ===
+    # SQL
     "sql": {"select", "insert", "update", "create"},
 
-    # === Fallback ===
+    # Fallback
     "default": {
         "function", "method", "function_definition",
         "procedure", "block", "section", "class", "module"
     }
 }
 
+# === File extension to language mapping ===
 EXT_TO_LANG = {
-    # High-level programming languages
+    # High-level
     ".py": "python",
     ".js": "javascript",
     ".ts": "typescript",
@@ -57,57 +49,81 @@ EXT_TO_LANG = {
     ".go": "go",
     ".rs": "rust",
 
-    # Low-level languages
+    # Low-level
     ".c": "c",
     ".cpp": "cpp",
     ".cc": "cpp",
-    ".h": "c",        # or cpp depending on context
+    ".h": "c",
     ".hpp": "cpp",
     ".s": "asm",
-    ".asm": "nasm",
     ".S": "asm",
+    ".asm": "nasm",
 
-    # Shell + scripting
+    # Shell
     ".sh": "bash",
     ".bash": "bash",
-    ".zsh": "bash",  # fallback as bash
+    ".zsh": "bash",
     ".ps1": "powershell",
 
-    # Markup / documentation
+    # Markup / docs
     ".html": "html",
     ".htm": "html",
     ".xml": "xml",
     ".md": "markdown",
     ".markdown": "markdown",
 
-    # Data / Config / Infra
+    # Data / config / infra
     ".json": "json",
     ".yaml": "yaml",
     ".yml": "yaml",
     ".toml": "toml",
     ".ini": "ini",
-    ".env": "ini",   # for lack of a better fit
+    ".env": "ini",
     ".properties": "ini",
 
-    # SQL / DB
-    ".sql": "sql",
-
-    # CI/CD / DevOps
-    ".gitlab-ci.yml": "yaml",         # GitLab CI
+    # CI/CD
+    ".gitlab-ci.yml": "yaml",
     ".gitlab-ci.yaml": "yaml",
-    "Jenkinsfile": "groovy",          # Jenkins pipeline
     ".groovy": "groovy",
+    "Jenkinsfile": "groovy",
     "Dockerfile": "dockerfile",
     ".dockerfile": "dockerfile",
-    ".dockerignore": "dockerfile",    # handled as config
+    ".dockerignore": "dockerfile",
 
-    # Build / Package / Meta
-    ".make": "make",                  # Not Tree-sitter supported (yet)
+    # Build systems
+    ".make": "make",
     "Makefile": "make",
-    "CMakeLists.txt": "cmake",        # CMake config
+    "CMakeLists.txt": "cmake",
     ".cmake": "cmake",
 
-    # Misc
-    ".txt": "markdown",               # fallback to markdown-like parsing
-    ".log": "markdown",               # if needed, group by lines or sections
+    # SQL
+    ".sql": "sql",
+
+    # Misc (non-code fallback to markdown)
+    ".txt": "markdown",
+    ".log": "markdown",
+
+    # Non-chunkable formats (map only for recognition)
+    ".asl": "asl",
+    ".m4": "m4",
+}
+
+# === Languages that can be chunked semantically using Tree-sitter ===
+CHUNKABLE_LANGUAGES = {
+    "python",
+    "javascript",
+    "typescript",
+    "java",
+    "c",
+    "cpp",
+    "c_sharp",
+    "go",
+    "rust",
+    "ruby",
+    "bash",
+    "shell",
+    "powershell",
+    "groovy",
+    "asm",
+    "nasm",
 }
