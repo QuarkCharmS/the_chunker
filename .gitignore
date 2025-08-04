@@ -50,3 +50,15 @@ dist/
 # Tree-sitter compiled shared libs
 build/my-languages.so
 
+# Ruff cache
+.ruff_cache/
+ruff_cache/
+
+# Vim swap/backup files
+*.swp
+*.swo
+*.swn
+*.un~
+*.bak
+*.tmp
+*~
