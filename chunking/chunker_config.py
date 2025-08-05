@@ -123,7 +123,5 @@ CHUNKABLE_LANGUAGES = {
     "bash",
     "shell",
     "powershell",
-    "groovy",
-    "asm",
-    "nasm",
+    "groovy"
 }

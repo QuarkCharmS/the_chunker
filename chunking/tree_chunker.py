@@ -1,6 +1,8 @@
 from typing import List
 from tree_sitter_languages import get_parser  # <-- correct import for tree_sitter_languages
-from chunker_config import LANG_FUNCTION_NODES
+from .chunker_config import LANG_FUNCTION_NODES
+from .tokenizer import count_tokens 
+from .fallback_chunker import fallback_chunk
 
 def extract_code_blocks(code: str, language_name: str) -> List[str]:  
 
@@ -25,7 +27,17 @@ def extract_code_blocks(code: str, language_name: str) -> List[str]:
     def recurse(node):
         chunks = []
         if node.type in valid_node_types:
-            chunks.append(code[node.start_byte:node.end_byte])
+            chunk_content = code[node.start_byte:node.end_byte]
+            tokens = count_tokens(chunk_content)
+            
+            if tokens > 400:
+                content_to_append = fallback_chunk(chunk_content)
+                chunks.extend(content_to_append)
+            else: 
+                chunks.append({
+                    "content": chunk_content,
+                    "tokens": tokens
+                    })
         for child in node.children:
             chunks.extend(recurse(child))
         return chunks

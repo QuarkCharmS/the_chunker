@@ -1,7 +1,7 @@
 import os
-from chunker_config import EXT_TO_LANG, CHUNKABLE_LANGUAGES
-from tree_chunker import extract_code_blocks
-from fallback_chunker import fallback_chunk_from_file
+from .chunker_config import EXT_TO_LANG, CHUNKABLE_LANGUAGES
+from .tree_chunker import extract_code_blocks
+from .fallback_chunker import fallback_chunk
 
 def resolve_language_from_path(path: str) -> str:
     basename = os.path.basename(path)
@@ -24,21 +24,12 @@ def chunk_file(file_path: str) -> list[str]:
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
-    except:
-        print("ERROR: COULD NOT READ FILE")
+    except OSError as e:
+        print(f"[ERROR] Could not read file {file_path}: {e}")
+        return []
     
     if language in CHUNKABLE_LANGUAGES:
         return extract_code_blocks(content, language)
 
-    return fallback_chunk_from_file(content)
+    return fallback_chunk(content)
 
-## TEST RUN ##
-
-filepath = "/home/santiago/dummy-files-for-project-testing/dummy.json"
-
-
-result = chunk_file(filepath)
-
-for i, chunk in enumerate(result, start=1):
-    print(f"--CHUNK {i}--")
-    print(chunk)
