@@ -47,7 +47,11 @@ LANG_FUNCTION_NODES = {
     
     # === Configuration & Build Languages ===
     "hcl": {"block", "attribute", "function_call"},
-    "dockerfile": {"instruction"},  # simplified - all instructions are under "instruction" node
+    "dockerfile": {"from_instruction", "run_instruction", "cmd_instruction", "copy_instruction", 
+                   "workdir_instruction", "env_instruction", "expose_instruction", "label_instruction",
+                   "arg_instruction", "add_instruction", "entrypoint_instruction", "volume_instruction",
+                   "user_instruction", "healthcheck_instruction", "shell_instruction", "stopsignal_instruction",
+                   "onbuild_instruction", "maintainer_instruction"},  # actual tree-sitter-dockerfile node types
     "yaml": {"block_mapping", "block_sequence", "flow_mapping", "flow_sequence"},
     "toml": {"table", "table_array_element", "pair"},  # changed array_of_tables
     "json": {"object", "array", "pair"},
@@ -319,3 +323,21 @@ def verify_language_setup():
         return results
     except ImportError:
         return "tree-sitter-languages not installed"
+
+# === Example usage for debugging ===
+if __name__ == "__main__":
+    # Test the configuration
+    print("Testing language detection:")
+    test_files = [
+        "test.py", "app.js", "main.ts", "Component.tsx",
+        "Main.java", "program.cs", "main.go", "lib.rs"
+    ]
+    
+    for file in test_files:
+        lang = get_language_from_extension(file)
+        nodes = get_function_nodes(lang)
+        chunkable = is_chunkable(lang)
+        print(f"{file:15} -> Language: {lang:12} Chunkable: {chunkable:5} Nodes: {len(nodes)}")
+    
+    print("\nVerifying tree-sitter-languages setup:")
+    print(verify_language_setup())
