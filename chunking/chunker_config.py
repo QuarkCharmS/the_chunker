@@ -10,18 +10,20 @@ LANG_FUNCTION_NODES = {
     "java": {"class_declaration", "method_declaration", "constructor_declaration", "interface_declaration", "enum_declaration"},
     "c": {"function_definition", "struct_specifier", "union_specifier", "enum_specifier"},
     "cpp": {"function_definition", "class_specifier", "struct_specifier", "namespace_definition", "template_declaration"},
-    "csharp": {"class_declaration", "method_declaration", "constructor_declaration", "interface_declaration", "struct_declaration", "enum_declaration", "namespace_declaration"},  # changed from c_sharp
+    "csharp": {"class_declaration", "method_declaration", "constructor_declaration", "interface_declaration", 
+               "struct_declaration", "enum_declaration", "namespace_declaration", "property_declaration",
+               "field_declaration", "event_declaration"},  # added more node types
     "go": {"function_declaration", "method_declaration", "type_declaration"},  # removed package_clause (usually top-level)
     "rust": {"function_item", "impl_item", "struct_item", "enum_item", "trait_item", "mod_item", "macro_definition"},
     "ruby": {"class", "module", "method", "singleton_method"},  # removed 'def' (it's part of method)
     
     # === Functional Languages ===
     "haskell": {"function", "data", "type", "class", "instance"},  # simplified node names
-    "elixir": {"def", "defp", "defmodule", "defprotocol", "defimpl", "defmacro"},  # changed to actual node types
+    "elixir": {"call", "do_block"},  # elixir uses 'call' nodes for function definitions
     "erlang": {"function_clause", "module_attribute", "record_declaration"},
     "ocaml": {"value_definition", "type_definition", "module_definition", "class_definition"},
-    "commonlisp": {"list"},  # simplified - tree-sitter-commonlisp is basic
-    "elisp": {"list"},  # simplified - tree-sitter-elisp is basic
+    "commonlisp": {"list_lit", "defun"},  # commonlisp uses list_lit for most constructs
+    "elisp": {"list"},  # elisp is also just lists
     
     # === JVM Languages ===
     "kotlin": {"function_declaration", "class_declaration", "object_declaration", "interface_declaration", "property_declaration"},
@@ -34,7 +36,7 @@ LANG_FUNCTION_NODES = {
     # === Scripting Languages ===
     "bash": {"function_definition", "compound_statement"},
     "perl": {"subroutine_declaration", "package_statement", "use_statement"},
-    "lua": {"function_declaration", "local_function_statement", "function_call"},  # updated node types
+    "lua": {"function_definition_statement", "local_function_definition_statement", "variable_assignment"},  # correct lua node types
     
     # === Data Science & Numeric ===
     "r": {"function_definition", "assignment", "call"},
@@ -70,7 +72,7 @@ LANG_FUNCTION_NODES = {
     # === Specialized Languages ===
     "hack": {"function_declaration", "class_declaration", "method_declaration", "interface_declaration"},
     "elm": {"function_declaration", "type_declaration", "type_alias_declaration", "port_declaration"},  # updated node types
-    "dot": {"graph", "subgraph", "node_statement", "edge_statement"},  # more specific node types
+    "dot": {"edge_stmt", "node_stmt", "block", "stmt_list"},  # actual dot node types
     "regex": {"pattern", "group", "character_class"},  # updated node types
     
     # === Languages NOT in tree-sitter-languages (removed) ===
@@ -179,6 +181,7 @@ EXT_TO_LANG = {
     ".containerfile": "dockerfile",
     "Dockerfile": "dockerfile",
     "Containerfile": "dockerfile",
+    "dockerfile": "dockerfile",  # for test files named exactly "dockerfile"
     ".yaml": "yaml",
     ".yml": "yaml",
     ".toml": "toml",
@@ -189,6 +192,8 @@ EXT_TO_LANG = {
     "Makefile": "make",
     "makefile": "make",
     "GNUmakefile": "make",
+    "Makefile.am": "make",
+    "Makefile.in": "make",
     
     # === Web Technologies ===
     ".html": "html",
@@ -237,8 +242,9 @@ EXT_TO_LANG = {
 # Updated to match what's actually available in tree-sitter-languages
 CHUNKABLE_LANGUAGES = {
     # Core programming languages
-    "python", "javascript", "typescript", "tsx", "java", "c", "cpp", "csharp",
+    "python", "javascript", "typescript", "tsx", "java", "c", "cpp",
     "go", "rust", "ruby",
+    # Note: csharp removed - not included in tree-sitter-languages package
     
     # Functional languages  
     "haskell", "elixir", "erlang", "ocaml", "commonlisp", "elisp",

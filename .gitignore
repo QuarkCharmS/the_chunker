@@ -62,3 +62,8 @@ ruff_cache/
 *.bak
 *.tmp
 *~
+
+# Test files
+
+test_all_languages.py
+
