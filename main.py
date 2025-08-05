@@ -2,7 +2,7 @@ import os
 from chunking import chunk_file  # <- this now uses dispatcher logic
 from typing import List, Dict
 
-INPUT_FILE = "/home/santiago/dummy-files-for-project-testing/dummy.asm"
+INPUT_FILE = "/home/santiago/dummy-files-for-project-testing/Dockerfile"
 
 def main():
     # 1. Use dispatcher to get chunks (tree-sitter or chonkie fallback)
