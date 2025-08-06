@@ -4,6 +4,10 @@ from .chunker_config import LANG_FUNCTION_NODES
 from .tokenizer import count_tokens 
 from .fallback_chunker import fallback_chunk
 
+def slice_node(node, code_bytes: bytes) -> str:
+    """Extract original source code for a Tree-sitter node while preserving indentation."""
+    return code_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="replace")
+
 def extract_code_blocks(code: str, language_name: str) -> List[dict]:  
     try:
         parser = get_parser(language_name)
@@ -15,7 +19,8 @@ def extract_code_blocks(code: str, language_name: str) -> List[dict]:
         return []
     
     print("Starting the parsing process...")
-    tree = parser.parse(bytes(code, "utf8"))
+    code_bytes = code.encode("utf-8")
+    tree = parser.parse(code_bytes)
     root = tree.root_node
     
     valid_node_types = LANG_FUNCTION_NODES.get(language_name, LANG_FUNCTION_NODES["default"])
@@ -24,7 +29,7 @@ def extract_code_blocks(code: str, language_name: str) -> List[dict]:
     def recurse(node):
         chunks = []
         if node.type in valid_node_types:
-            chunk_content = code[node.start_byte:node.end_byte]
+            chunk_content = slice_node(node, code_bytes)
             tokens = count_tokens(chunk_content)
             
             if tokens > 400:
