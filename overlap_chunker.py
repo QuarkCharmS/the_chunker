@@ -40,23 +40,17 @@ def merge_with_overlap(semantic_chunks: List[Dict[str, Union[str, int]]]) -> Lis
             
             # Go backwards through previous chunks until we reach ~100 tokens
             j = i - 1
-            while j >= 0 and overlap_tokens < 100:
+            while j >= 0:
                 prev_chunk = semantic_chunks[j]
-                
-                # Check if adding this chunk would exceed 100 tokens
-                if overlap_tokens + prev_chunk['tokens'] > 100:
-                    break
                 
                 # Add this chunk to the beginning of overlap
                 overlap_content.insert(0, prev_chunk['content'])
                 overlap_tokens += prev_chunk['tokens']
                 j -= 1
             
-            # Add the accumulated overlap to current content
-            if overlap_content:
-                current_content.extend(overlap_content)
-                current_tokens = overlap_tokens
-        
+                if overlap_tokens > 100:
+                    break
+
         # Add chunks until we reach target range
         while i < len(semantic_chunks):
             chunk = semantic_chunks[i]
