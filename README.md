@@ -33,8 +33,7 @@ A standalone chunking engine designed to process source code and other text file
 ├── start-everything.sh        # Activation script for environment
 ├── requirements-wheel.txt     # Dependencies to install from wheel (airgapped)
 ├── README.md                  # You're here
-├── .gitignore                 # Clean repo by ignoring common files
-└── wheels/                    # Pre-downloaded .whl files for offline setup
+└── .gitignore                 # Clean repo by ignoring common files
 ```
 
 ---
