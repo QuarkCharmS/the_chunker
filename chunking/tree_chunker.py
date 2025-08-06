@@ -5,8 +5,28 @@ from .tokenizer import count_tokens
 from .fallback_chunker import fallback_chunk
 
 def slice_node(node, code_bytes: bytes) -> str:
-    """Extract original source code for a Tree-sitter node while preserving indentation."""
-    return code_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="replace")
+    """
+    Return the exact source for the node, including the line's leading indentation.
+    For Python, if the node is inside a decorated_definition, include the decorators.
+    """
+    target = node
+
+    # If using tree-sitter-python, decorators wrap the def/class in `decorated_definition`
+    if node.parent and node.parent.type == "decorated_definition":
+        target = node.parent
+
+    start = target.start_byte
+    end = target.end_byte
+
+    # Expand start to the beginning of the line to capture indentation
+    lb = code_bytes.rfind(b"\n", 0, start)
+    start = 0 if lb == -1 else lb + 1
+
+    # (Optional) include a trailing newline for cleaner boundaries
+    if end < len(code_bytes) and code_bytes[end:end+1] == b"\n":
+        end += 1
+
+    return code_bytes[start:end].decode("utf-8", errors="replace")
 
 def extract_code_blocks(code: str, language_name: str) -> List[dict]:  
     try:
