@@ -3,7 +3,7 @@ from chunking import chunk_file  # <- uses dispatcher logic
 from overlap_chunker import merge_with_overlap
 from typing import List, Dict
 
-INPUT_FILE = "/home/santiago/dummy-files-for-project-testing/dummy.cs"
+INPUT_FILE = "/home/santiago/dummy-files-for-project-testing/dummy.py"
 
 def main():
     # 1. Use dispatcher to get semantic chunks (tree-sitter or fallback)
@@ -25,15 +25,16 @@ def main():
     print("\n" + "="*60)
     print("SEMANTIC CHUNKS (from tree-sitter/fallback):")
     print("="*60)
-
-    for i, block in enumerate(semantic_chunks[:3], start=1):  # Show first 3
+    
+    #Edit to semantic_chunks[:3] to just show the first 3
+    for i, block in enumerate(semantic_chunks, start=1):  # Show first 3
         print(f"\n--- Semantic Chunk {i} ---")
         print(f"Tokens: {block['tokens']}")
         content = block['content']
         print(content[:200] + "..." if len(content) > 200 else content)
 
-    if len(semantic_chunks) > 3:
-        print(f"\n... and {len(semantic_chunks) - 3} more semantic chunks")
+    #if len(semantic_chunks) > 3:
+    #    print(f"\n... and {len(semantic_chunks) - 3} more semantic chunks")
 
     print("\n" + "="*60)
     print("FINAL CHUNKS (for Qwen3-Embedding 8B):")

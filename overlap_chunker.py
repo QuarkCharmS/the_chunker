@@ -25,21 +25,37 @@ def merge_with_overlap(semantic_chunks: List[Dict[str, Union[str, int]]]) -> Lis
     """
     if not semantic_chunks:
         return []
-    
+
     final_chunks = []
     i = 0
-    
+
     while i < len(semantic_chunks):
         current_content = []
         current_tokens = 0
         
-        # Check if we should add overlap from previous chunk
+        # Check if we should add overlap from previous chunks
         if final_chunks and i > 0:
-            prev_chunk = semantic_chunks[i - 1]
-            if prev_chunk['tokens'] <= 100:
-                # Add previous chunk as overlap
-                current_content.append(prev_chunk['content'])
-                current_tokens = prev_chunk['tokens']
+            overlap_content = []
+            overlap_tokens = 0
+            
+            # Go backwards through previous chunks until we reach ~100 tokens
+            j = i - 1
+            while j >= 0 and overlap_tokens < 100:
+                prev_chunk = semantic_chunks[j]
+                
+                # Check if adding this chunk would exceed 100 tokens
+                if overlap_tokens + prev_chunk['tokens'] > 100:
+                    break
+                
+                # Add this chunk to the beginning of overlap
+                overlap_content.insert(0, prev_chunk['content'])
+                overlap_tokens += prev_chunk['tokens']
+                j -= 1
+            
+            # Add the accumulated overlap to current content
+            if overlap_content:
+                current_content.extend(overlap_content)
+                current_tokens = overlap_tokens
         
         # Add chunks until we reach target range
         while i < len(semantic_chunks):
@@ -74,11 +90,10 @@ def merge_with_overlap(semantic_chunks: List[Dict[str, Union[str, int]]]) -> Lis
                 'content': '\n\n'.join(current_content),
                 'tokens': current_tokens
             })
-    
+
     # Print summary for verification
     print(f"[INFO] Merged {len(semantic_chunks)} semantic chunks into {len(final_chunks)} final chunks")
     for idx, chunk in enumerate(final_chunks):
         print(f"  Chunk {idx}: {chunk['tokens']} tokens")
-    
-    return final_chunks
 
+    return final_chunks
