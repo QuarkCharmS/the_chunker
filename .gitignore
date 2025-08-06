@@ -1,3 +1,6 @@
+#Wheels folder
+wheels/
+
 # Byte-compiled files
 __pycache__/
 *.py[cod]
