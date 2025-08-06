@@ -1,6 +1,6 @@
 import os
 from chunking import chunk_file  # <- uses dispatcher logic
-from overlap_chunker import merge_with_overlap
+from my_overlap_chunker import merge_with_overlap
 from typing import List, Dict
 
 INPUT_FILE = "/home/santiago/dummy-files-for-project-testing/dummy.py"
@@ -43,6 +43,7 @@ def main():
     for i, chunk in enumerate(final_chunks, start=1):
         print(f"\n--- Final Chunk {i} ---")
         print(f"Tokens: {chunk['tokens']}")
+        print(f"Overlap Tokens: {chunk['overlap_tokens']}")
         print(f"Content:\n{chunk['content']}")
         print("-" * 50)
 

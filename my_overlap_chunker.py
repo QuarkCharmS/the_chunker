@@ -10,34 +10,37 @@
 # The idea is to repeat this process each time until you have done the whole code.
 # semantic_chunks: [{"content": str, "tokens": int}, ...]
 
-def my_chunk_overlapper(semantic_chunks):
-
+def merge_with_overlap(semantic_chunks):
     # go chunk by chunk and add them, until the sum of the tokens is over 400
     # how do you know when to stop? you need to stop once you have reached the last chunk in the index
     # so you can have some kind of curr_index, that will point to the chunk you are in right now
     # then you can have some sort of first_index_new_chunk which will point to the index of the first chunk in the current chunk we're in
-    
     curr_index = 0
     new_chunks = []
     while curr_index < len(semantic_chunks):
         first_index_new_chunk = curr_index
-        new_chunk = {"content": "", "tokens": 0}
+        new_chunk = {"content": "", "tokens": 0, "overlap_tokens": 0}
 
-        while new_chunk["tokens"] < 400:
+        while curr_index < len(semantic_chunks) and new_chunk["tokens"] < 400:
             new_chunk["content"] += semantic_chunks[curr_index]["content"]
             new_chunk["tokens"] += semantic_chunks[curr_index]["tokens"]
             curr_index += 1
             # once the token count of the new_chunk reaches 400 this will stop
-            
+
         # once reached this point, technically the "unified chunk" is already created
         # this is the point in which i am supposed to add the overlap
-        
+
         reverse_index = first_index_new_chunk - 1
         overlap = ""
         overlap_tokens = 0
-        while reverse_index > 0 and overlap_tokens < 80:
+        while reverse_index >= 0 and overlap_tokens < 80:
             overlap = semantic_chunks[reverse_index]["content"] + overlap
             overlap_tokens += semantic_chunks[reverse_index]["tokens"]
+            reverse_index -= 1
 
         new_chunk["content"] = overlap + new_chunk["content"]
+        new_chunk["tokens"] += overlap_tokens
+        new_chunk["overlap_tokens"] = overlap_tokens
         new_chunks.append(new_chunk)
+
+    return new_chunks
