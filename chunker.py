@@ -1,6 +1,6 @@
 import os
-from chunking import chunk_file  # <- uses dispatcher logic
-from my_overlap_chunker import merge_with_overlap
+from .chunking import chunk_file  # <- uses dispatcher logic
+from .my_overlap_chunker import merge_with_overlap
 from typing import List, Dict
 
 
