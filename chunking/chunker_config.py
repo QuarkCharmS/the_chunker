@@ -270,9 +270,6 @@ CHUNKABLE_LANGUAGES = {
     # Web technologies
     "html", "css", "embedded-template",
     
-    # Documentation
-    "markdown", "rst", "jsdoc",
-    
     # Specialized languages
     "hack", "elm", "dot", "regex"
     # Removed tsq - not available

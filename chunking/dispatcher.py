@@ -23,7 +23,10 @@ def chunk_file(file_path: str) -> list[dict]:
     if is_chunkable(language):
         print(f"[INFO] Using tree-sitter chunking for {language}")
         try:
-            return extract_code_blocks(content, language)
+            code_blocks = extract_code_blocks(content, language)
+            if code_blocks == []:
+                return fallback_chunk(content)
+            return code_blocks
         except Exception as e:
             print(f"[WARNING] Tree-sitter chunking failed for {language}: {e}")
             print(f"[INFO] Falling back to basic chunking")
