@@ -28,7 +28,7 @@ def slice_node(node, code_bytes: bytes) -> str:
 
     return code_bytes[start:end].decode("utf-8", errors="replace")
 
-def extract_code_blocks(code: str, language_name: str) -> List[dict]:  
+def extract_code_blocks(code: str, language_name: str, model_name: str) -> List[dict]:  
     try:
         parser = get_parser(language_name)
         if parser is None:
@@ -50,13 +50,13 @@ def extract_code_blocks(code: str, language_name: str) -> List[dict]:
         chunks = []
         if node.type in valid_node_types:
             chunk_content = slice_node(node, code_bytes)
-            tokens = count_tokens(chunk_content)
+            tokens = count_tokens(chunk_content, model_name)
             
             if tokens > 400:
                 # For large functions/classes, break them into smaller chunks
                 print(f"[INFO] Found large {node.type} with {tokens} tokens (>400 limit)")
                 print(f"[INFO] Using fallback strategy to split this {node.type} into smaller chunks")
-                content_to_append = fallback_chunk(chunk_content)
+                content_to_append = fallback_chunk(chunk_content, model_name)
                 chunks.extend(content_to_append)
             else: 
                 chunks.append({

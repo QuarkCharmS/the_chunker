@@ -4,7 +4,7 @@ from .chunker_config import get_language_from_extension, is_chunkable
 from .tree_chunker import extract_code_blocks
 from .fallback_chunker import fallback_chunk
 
-def chunk_file(file_path: str) -> list[dict]:
+def chunk_file(file_path: str, model_name: str) -> list[dict]:
     """
     Main entry point for chunking files.
     Returns list of dictionaries with 'content' and 'tokens' keys.
@@ -23,14 +23,15 @@ def chunk_file(file_path: str) -> list[dict]:
     if is_chunkable(language):
         print(f"[INFO] Using tree-sitter chunking for {language}")
         try:
-            code_blocks = extract_code_blocks(content, language)
+            code_blocks = extract_code_blocks(content, language, model_name)
             if code_blocks == []:
-                return fallback_chunk(content)
+                print("[INFO] No code blocks were extracted from file, using fallback strategy instead")
+                return fallback_chunk(content, model_name)
             return code_blocks
         except Exception as e:
             print(f"[WARNING] Tree-sitter chunking failed for {language}: {e}")
             print(f"[INFO] Falling back to basic chunking")
-            return fallback_chunk(content)
+            return fallback_chunk(content, model_name)
     else:
         print(f"[INFO] Using fallback chunking for {language}")
-        return fallback_chunk(content)
+        return fallback_chunk(content, model_name)
