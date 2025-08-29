@@ -3,6 +3,8 @@ import os
 from .chunker_config import get_language_from_extension, is_chunkable
 from .tree_chunker import extract_code_blocks
 from .fallback_chunker import fallback_chunk
+from .read_file_content import read_file_content 
+
 
 def chunk_file(file_path: str, model_name: str) -> list[dict]:
     """
@@ -14,9 +16,13 @@ def chunk_file(file_path: str, model_name: str) -> list[dict]:
     print(f"[INFO] Identified language: {language} for file: {os.path.basename(file_path)}")
     
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
-    except OSError as e:
+        content = read_file_content(file_path)
+        
+        if content == "":
+            print("[INFO] File is empty")
+            return []
+
+    except Exception as e:
         print(f"[ERROR] Could not read file {file_path}: {e}")
         return []
     
