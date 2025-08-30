@@ -6,14 +6,15 @@ from .fallback_chunker import fallback_chunk
 from .read_file_content import read_file_content 
 
 
-def chunk_file(file_path: str, model_name: str) -> list[dict]:
+def chunk_file(file_path: str, model_name: str, debug_level : str) -> list[dict]:
     """
     Main entry point for chunking files.
     Returns list of dictionaries with 'content' and 'tokens' keys.
     """
     # Use the centralized language resolution from config
     language = get_language_from_extension(file_path)
-    print(f"[INFO] Identified language: {language} for file: {os.path.basename(file_path)}")
+    if debug_level == "VERBOSE":
+        print(f"[INFO] Identified language: {language} for file: {os.path.basename(file_path)}")
     
     try:
         content = read_file_content(file_path)
@@ -27,11 +28,13 @@ def chunk_file(file_path: str, model_name: str) -> list[dict]:
         return []
     
     if is_chunkable(language):
-        print(f"[INFO] Using tree-sitter chunking for {language}")
+        if debug_level == "VERBOSE":
+            print(f"[INFO] Using tree-sitter chunking for {language}")
         try:
-            code_blocks = extract_code_blocks(content, language, model_name)
+            code_blocks = extract_code_blocks(content, language, model_name, debug_level)
             if code_blocks == []:
-                print("[INFO] No code blocks were extracted from file, using fallback strategy instead")
+                if debug_level=="VERBOSE":
+                    print("[INFO] No code blocks were extracted from file, using fallback strategy instead")
                 return fallback_chunk(content, model_name)
             return code_blocks
         except Exception as e:
@@ -39,5 +42,6 @@ def chunk_file(file_path: str, model_name: str) -> list[dict]:
             print(f"[INFO] Falling back to basic chunking")
             return fallback_chunk(content, model_name)
     else:
-        print(f"[INFO] Using fallback chunking for {language}")
+        if debug_level == "VERBOSE":
+            print(f"[INFO] Using fallback chunking for {language}")
         return fallback_chunk(content, model_name)

@@ -28,7 +28,7 @@ def slice_node(node, code_bytes: bytes) -> str:
 
     return code_bytes[start:end].decode("utf-8", errors="replace")
 
-def extract_code_blocks(code: str, language_name: str, model_name: str) -> List[dict]:  
+def extract_code_blocks(code: str, language_name: str, model_name: str, debug_level: str) -> List[dict]:  
     try:
         parser = get_parser(language_name)
         if parser is None:
@@ -38,13 +38,15 @@ def extract_code_blocks(code: str, language_name: str, model_name: str) -> List[
         print(f"[ERROR] Failed to load parser for '{language_name}': {e}")
         return []
     
-    print("Starting the parsing process...")
+    if debug_level == "VERBOSE":
+        print("Starting the parsing process...")
     code_bytes = code.encode("utf-8")
     tree = parser.parse(code_bytes)
     root = tree.root_node
     
     valid_node_types = LANG_FUNCTION_NODES.get(language_name, LANG_FUNCTION_NODES["default"])
-    print(f"Valid node types for '{language_name}': {valid_node_types}")
+    if debug_level=="VERBOSE":
+        print(f"Valid node types for '{language_name}': {valid_node_types}")
     
     def recurse(node):
         chunks = []
@@ -54,8 +56,9 @@ def extract_code_blocks(code: str, language_name: str, model_name: str) -> List[
             
             if tokens > 400:
                 # For large functions/classes, break them into smaller chunks
-                print(f"[INFO] Found large {node.type} with {tokens} tokens (>400 limit)")
-                print(f"[INFO] Using fallback strategy to split this {node.type} into smaller chunks")
+                if debug_level == "VERBOSE":
+                    print(f"[INFO] Found large {node.type} with {tokens} tokens (>400 limit)")
+                    print(f"[INFO] Using fallback strategy to split this {node.type} into smaller chunks")
                 content_to_append = fallback_chunk(chunk_content, model_name)
                 chunks.extend(content_to_append)
             else: 
@@ -68,8 +71,9 @@ def extract_code_blocks(code: str, language_name: str, model_name: str) -> List[
             chunks.extend(recurse(child))
         
         return chunks
-    
-    print("Parsing complete. Returning results.")
+    if debug_level == "VERBOSE":
+        print("Parsing complete. Returning results.")
     result = recurse(root)
-    print(f"[INFO] Extracted {len(result)} chunks")
+    if debug_level == "VERBOSE": 
+        print(f"[INFO] Extracted {len(result)} chunks")
     return result

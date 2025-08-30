@@ -14,6 +14,7 @@ env/
 .rag_env/
 rag_env/
 chunker-venv/
+new-chunker-venv/
 
 # VSCode and PyCharm config (optional)
 .vscode/
@@ -69,4 +70,4 @@ ruff_cache/
 # Test files
 
 test_all_languages.py
-
+test_chunker.py

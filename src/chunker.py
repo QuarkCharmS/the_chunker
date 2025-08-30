@@ -6,7 +6,7 @@ from typing import List, Dict
 
 def turn_file_to_chunks(input_file, debug_level="NONE", model_name="Qwen/Qwen3-Embedding-8B"):
     # 1. Use dispatcher to get semantic chunks (tree-sitter or fallback)
-    semantic_chunks = chunk_file(input_file, model_name)
+    semantic_chunks = chunk_file(input_file, model_name, debug_level)
     if not semantic_chunks:
         print(f"[WARN] No blocks found in {input_file}")
         return
