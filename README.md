@@ -4,7 +4,7 @@ A standalone chunking engine that turns source code and other text files into **
 
 ---
 
-## 🚀 What it’s for
+## 🚀 What it's for
 
 `the_chunker` splits input files into chunks optimized for LLM pipelines (RAG, summarization, code search) while staying **decoupled from embedding/vector DB logic**.
 
@@ -21,21 +21,21 @@ Core capabilities:
 
 ```
 .
-├── chunker.py                 # Main entry point for running chunking locally
-├── chunker-venv/              # Local Python virtual environment (ignored by git)
-├── chunking/                  # Core logic module
-│   ├── __init__.py
-│   ├── chunker_config.py      # Token limits, model settings, feature flags
-│   ├── dispatcher.py          # Chooses tree_chunker or fallback_chunker per file
-│   ├── fallback_chunker.py    # Fallback strategy for non‑code files
-│   ├── tokenizer.py           # Token counting utilities (HF/other tokenizers)
-│   ├── tree_chunker.py        # Tree‑sitter AST chunker
-│   └── chunking-logic.md      # Developer notes on chunking strategy
-├── my_overlap_chunker.py      # Overlap strategy (tuned for Qwen3‑Embedding 8B)
-├── __init__.py                # Top‑level package init
-├── start-everything.sh        # Convenience venv activation script
-├── requirements.txt           # Standard dependency list
-├── requirements-wheel.txt     # Air‑gapped install list (use with local wheels)
+├── src/
+│   └── the_chunker/           # Main package
+│       ├── __init__.py        # Package initialization
+│       ├── chunker.py         # Main entry point for running chunking locally
+│       ├── my_overlap_chunker.py  # Overlap strategy (tuned for Qwen3‑Embedding 8B)
+│       └── chunking/          # Core logic module
+│           ├── __init__.py
+│           ├── chunker_config.py    # Token limits, model settings, feature flags
+│           ├── dispatcher.py        # Chooses tree_chunker or fallback_chunker per file
+│           ├── fallback_chunker.py  # Fallback strategy for non‑code files
+│           ├── tokenizer.py         # Token counting utilities (HF/other tokenizers)
+│           ├── tree_chunker.py      # Tree‑sitter AST chunker
+│           └── chunking-logic.md    # Developer notes on chunking strategy
+├── pyproject.toml             # Modern Python packaging configuration
+├── test_chunker.py            # Test file
 ├── README.md                  # Project documentation
 └── .gitignore                 # Clean repo ignores
 ```
@@ -44,22 +44,15 @@ Core capabilities:
 
 ## ⚙️ Setup
 
-Quickstart (if venv already prepared):
+Install the package:
 
 ```bash
-source start-everything.sh
+# Install in editable mode for development
+pip install -e .
+
+# Or install directly from GitHub
+pip install git+https://github.com/QuarkCharmS/the_chunker.git
 ```
-
-Fresh setup (e.g., new machine / clean environment):
-
-```bash
-python3 -m venv chunker-venv
-source chunker-venv/bin/activate
-# Air‑gapped install using local wheels
-pip install --no-index --find-links=./wheels -r requirements-wheel.txt
-```
-
-> Tip: If you’re not air‑gapped, you can use a standard `requirements.txt` and plain `pip install -r requirements.txt`.
 
 ---
 
@@ -98,14 +91,14 @@ final_chunks = turn_file_to_chunks(
 ### Low‑level (semantic only)
 
 ```python
-from chunking.dispatcher import chunk_file
+from the_chunker.chunking.dispatcher import chunk_file
 semantic_chunks = chunk_file("path/to/codefile.py", model_name="Qwen/Qwen3-Embedding-8B")
 ```
 
 ### Manual merge
 
 ```python
-from my_overlap_chunker import merge_with_overlap
+from the_chunker import merge_with_overlap
 final_chunks = merge_with_overlap(semantic_chunks)
 ```
 
@@ -127,7 +120,7 @@ Defaults are tuned for **Qwen3‑Embedding 8B**:
 - Overlap is applied between neighbors to preserve cross‑chunk context
 - Large semantic blocks may exceed the upper bound by design (no hard wrap to avoid breaking AST/paragraph boundaries)
 
-These thresholds live in `chunking/chunker_config.py`. Adjust to fit your model/context window.
+These thresholds live in `the_chunker/chunking/chunker_config.py`. Adjust to fit your model/context window.
 
 ---
 
@@ -137,7 +130,7 @@ These thresholds live in `chunking/chunker_config.py`. Adjust to fit your model/
 
 - Works with **Hugging Face** tokenizer identifiers (e.g., `"Qwen/Qwen3-Embedding-8B"`, `"meta-llama/Llama-3-70b-hf"`).
 - You can add aliases or custom logic in `chunker_config.py` to map model names → tokenizer names.
-- If a tokenizer isn’t found, we fall back to a reasonable default and log a warning.
+- If a tokenizer isn't found, we fall back to a reasonable default and log a warning.
 
 > **Counting only**: The `model_name` is used to choose a tokenizer for **token counting**, not to call a remote API. Bring‑your‑own embedding/generation stack separately.
 
