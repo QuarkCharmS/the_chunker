@@ -68,6 +68,6 @@ ruff_cache/
 *~
 
 # Test files
-
+tests/
 test_all_languages.py
 test_chunker.py
